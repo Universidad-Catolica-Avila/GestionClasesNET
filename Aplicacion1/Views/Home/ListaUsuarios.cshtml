@@ -1,0 +1,77 @@
+﻿@model IEnumerable<Aplicacion1.Models.Usuario>
+
+@{
+    ViewData["Title"] = "ListaUsuarios";
+}
+
+<div class="container mt-5">
+    <h3 class="text-center">LISTA USUARIOS</h3>
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            @ViewBag.ErrorMessage
+        </div>
+    }
+    else
+    {
+        <div class="d-flex justify-content-end mt-3">
+            <a href="@Url.Action("CreateUser", "Home")" class="btn btn-primary">CREAR NUEVO USUARIO</a>
+        </div>
+        <table class="table table-bordered table-striped mt-3">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                    <th>Fecha Baja</th>
+                    <th>Observaciones</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var usuario in Model)
+                {
+                    <tr>
+                        <td>@usuario.idUsuario</td>
+                        <td>@usuario.nombre</td>
+                        <td>@usuario.email</td>
+                        <td>@usuario.rol</td>
+                        <td>@(usuario.estado ? "Activo" : "Inactivo")</td>
+                        <td>@(usuario.fechaBaja.HasValue ? usuario.fechaBaja.Value.ToString("dd/MM/yyyy") : "-")</td>
+                        <td>@(!string.IsNullOrWhiteSpace(usuario.observaciones) ? usuario.observaciones : "-")</td>
+                        <td>
+                            <a href="@Url.Action("EditUser", "Home", new { id = usuario.idUsuario })" class="btn btn-primary">
+                                EDITAR
+                            </a>
+                            <button class="btn btn-danger btn-sm ms-2"
+                                    onclick="confirmarBorrado('@Url.Action("DeleteUser", "Home", new { id = usuario.idUsuario })')">
+                                BORRAR
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+<script>
+    async function confirmarBorrado(url) {
+        const resultado = await Swal.fire({
+            title: '¿Está seguro?',
+            text: "¡Esta acción NO se puede DESHACER!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, borrar',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (resultado.isConfirmed) {
+            // Redirigir a la URL para borrar el usuario
+            window.location.href = url;
+        }
+    }
+</script>
